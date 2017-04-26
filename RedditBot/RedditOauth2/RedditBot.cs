@@ -12,17 +12,18 @@ namespace RedditOauth2
 {
     class RedditBot
     {
-
+        private MessageHandler _handler;
         private HttpClient _client;
         private TokenBucket _bucket;
 
         public RedditBot()
         {
+
             _client = new HttpClient();
             Key key = new Key(_client);
+            Key.runouath();
 
             _bucket = new TokenBucket(30, 60);
-            Key.runouath();
 
             while (true) { 
                 lookout();
@@ -46,33 +47,26 @@ namespace RedditOauth2
             {
                 foreach (var item in content)
                 {
-                    var message = item.SelectToken("data.body").Value<string>();
-                    var subject = item.SelectToken("data.subject").Value<string>();
-                    var author = item.SelectToken("data.author").Value<string>();
-                    var id = item.SelectToken("data.id").Value<string>();
+                    var re_message = item.SelectToken("data.body").Value<string>();
+                    var re_subject = item.SelectToken("data.subject").Value<string>();
+                    var re_author = item.SelectToken("data.author").Value<string>();
+                    var re_id = item.SelectToken("data.id").Value<string>();
 
-                    Console.WriteLine(subject);
-                    Console.WriteLine(message);
+                    
 
-                    if (subject != "IWish")
-                    {
-                        message = "If you want me to do your bidding the subject of your letter has to be 'IWish' // Vilhelm";
-                    }
-                    else
-                    {
-                        message = "https://www.youtube.com/watch?v=eY52Zsg-KVI";
-                    }
+                    _handler = new MessageHandler(re_message, re_subject, re_author, re_id);
+                   
 
-                    subject = $"{author} wish";
+
                     var selectedtokens = new Dictionary<string, string>
                     {
-                        { "text", message },
-                        { "subject", subject },
-                        { "to", author },
+                        { "text", _handler.message },
+                        { "subject", _handler.subject },
+                        { "to", _handler.author },
                         { "api_type", "json" }
                     };
 
-                    var message_id = new FormUrlEncodedContent(new Dictionary<string, string> { { "id", "t4_" + id } });
+                    var message_id = new FormUrlEncodedContent(new Dictionary<string, string> { { "id", "t4_" + re_id } });
                     _bucket.afford();
                     var redurl = "https://oauth.reddit.com/api/read_message/";
                     var redmessage = _client.PostAsync(redurl, message_id).GetAwaiter().GetResult();

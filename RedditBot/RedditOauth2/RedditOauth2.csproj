@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageHandler.cs" />
     <Compile Include="RedditBot.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="Program.cs" />
