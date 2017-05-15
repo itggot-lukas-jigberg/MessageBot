@@ -83,7 +83,6 @@ namespace RedditOauth2
 
             responseData =
             response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            Console.WriteLine(responseData);
 
         }
 

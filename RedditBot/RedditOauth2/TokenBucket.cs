@@ -9,25 +9,25 @@ namespace RedditOauth2
 {
     class TokenBucket
     {
-        public int currentTokens, capacity, interval;
+        public int currentTokens, capacity;
+        public int interval;
         public DateTime lastRefreshed;
 
         public TokenBucket(int tokencap, int interval)
         {
-            this.capacity = tokencap;
-            this.currentTokens = capacity;
+            capacity = tokencap;
+            currentTokens = capacity;
             this.interval = interval;
-            this.lastRefreshed = DateTime.Now;
+            lastRefreshed = DateTime.Now;
             Console.WriteLine($"{currentTokens}");
         }
 
-            // kör denna om du ska kolla om lookout for fortsätta
-
-        public void afford()
+        public void Afford()
         {
             Refill();
             if (currentTokens - 1 < 0)
             {
+                Console.WriteLine("No more tokens to spend, wait a bit");
                 Thread.Sleep((interval*1000) - Convert.ToInt32(DateTime.Now.Subtract(lastRefreshed).TotalSeconds));
                 Refill();
             }
@@ -36,7 +36,6 @@ namespace RedditOauth2
                 currentTokens -= 1;
             }
             Console.WriteLine($"{currentTokens}");
-
         } 
 
         public bool Refill()
@@ -49,5 +48,6 @@ namespace RedditOauth2
             }
             return false;
         }
+
     }
 }
